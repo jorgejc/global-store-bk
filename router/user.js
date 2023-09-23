@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const User = require('../models/User');
+const Store = require('../models/Store');
 const { validationResult, check  } = require('express-validator');
 const bycript = require('bcryptjs');
 const { validateJWT } = require('../middleware/validar-jwt');
@@ -12,7 +13,9 @@ router.post('/', [
     check('name', 'invalid.name').not().isEmpty(),
     check('email', 'invalid.email').isEmail(),
     check('password', 'invalid.password').not().isEmpty(),
-    check('role', 'invalid.role').isIn([ 'admin', 'seller'])
+    // check('role', 'invalid.role').isIn([ 'admin', 'seller']),
+    check('storeName', 'invalid.storeName').not().isEmpty(),
+    check('storeDescription', 'invalid.storeDescription').not().isEmpty(),
 ], async function(req, res){
 
     try {
@@ -26,22 +29,36 @@ router.post('/', [
         if(existUser) {
             return res.status(400).send('Email exist');
         }
-        let user = new User();
-        user.name = req.body.name;
-        user.email = req.body.email;
+
+        //crear tiendas o vendedores
+        const store = new Store({
+        name: req.body.storeName,
+        description: req.body.storeDescription,
+        });
+
+        const savedStore = await store.save();
+
+        const user = new User({
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
+        role: req.body.role,
+        store: savedStore._id,
+        fechaCreacion: new Date(),
+        fechaActualizacion: new Date(),
+
+        });
+
+         //Establecer rol por defecto
+         if (!req.body.role) {
+            req.body.role = 'seller';
+        }
 
         const salt = bycript.genSaltSync()
         const password = bycript.hashSync(req.body.password, salt);
         user.password = password;
-        //Establecer rol por defecto
-        if (!req.body.role) {
-            req.body.role = 'seller';
-        }
-        user.role = req.body.role;
-        user.store = req.body.store._id,
-        user.fechaCreacion = new Date();
-        user.fechaActualizacion = new Date();
-        user = await user.save();
+
+        await user.save();
         res.send(user);
         console.log(user);
 
