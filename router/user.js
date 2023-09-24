@@ -9,7 +9,7 @@ const { validateRoleAdmin } = require('../middleware/validar-rol-admin');
 const router = Router();
 
 //create user
-router.post('/', [
+router.post('/', [  
     check('name', 'invalid.name').not().isEmpty(),
     check('email', 'invalid.email').isEmail(),
     check('password', 'invalid.password').not().isEmpty(),

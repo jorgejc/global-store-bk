@@ -35,11 +35,11 @@ const productSchema = Schema({
     ref: 'Brand',
     required: true
   },
-  seller: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  }
+  // seller: {
+  //   type: Schema.Types.ObjectId,
+  //   ref: 'User',
+  //   required: true
+  // }
 
 });
 

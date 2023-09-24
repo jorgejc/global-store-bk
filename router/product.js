@@ -16,6 +16,7 @@ router.post('/', [
     check('category', 'invalid.category').not().isEmpty(),
     check('brand', 'invalid.brand').not().isEmpty(),
     // check('seller', 'invalid.seller').not().isEmpty(),
+
    
 ], async function(req, res){
 
@@ -34,8 +35,10 @@ router.post('/', [
         product.image = req.body.image;
         product.category = req.body.category._id;
         product.brand = req.body.brand._id;
-        product.seller = req.body.user._id;
-        console.log(product.seller);
+        // Asigna el usuario automáticamente desde req.user
+        // product.seller = req.user;
+        // console.log(product.seller);
+        
         product.fechaCreacion = new Date();
         product.fechaActualizacion = new Date();
 
@@ -61,9 +64,9 @@ router.get('/', async function(req, res){
             {
                 path: 'brand', select: 'name'
             },
-            {
-                path: 'seller', select: 'name'
-            }
+            // {
+            //     path: 'seller', select: 'name'
+            // }
         ]);
         res.send(products); 
 
